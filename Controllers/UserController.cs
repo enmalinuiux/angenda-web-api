@@ -2,6 +2,7 @@ using Microsoft.AspNetCore.Mvc;
 using agenda_web_api.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
+using System.Threading.Tasks;
 
 namespace agenda_web_api.Controllers
 {
@@ -18,38 +19,64 @@ namespace agenda_web_api.Controllers
 
         // method: GET/
         [HttpGet]
-        public IActionResult Get()
+        public async Task<ActionResult<User>> Get()
         {
-            var users = _context.User.ToList();
+            var users = await _context.User.ToListAsync();
+
+            if (users == null) return NotFound();
         
-            return Ok(_context.User.ToList());
+            return Ok(users);
         }
 
         [HttpGet("{id}")]
-        public IActionResult Get(string id)
+        public async Task<ActionResult<User>> Get(string id)
         {
-            var user = _context.User.Find(id);
+            var user = await _context.User.FindAsync(id);
+
+            if (user == null) return NotFound();
             
             return Ok(user);
         }
 
         [HttpPost]
-        public IActionResult Post(User user)
+        public async Task<ActionResult<User>> Post(User user)
         {
-            _context.User.Add(user);
-            _context.SaveChanges();
+            await _context.User.AddAsync(user);
+            await _context.SaveChangesAsync();
 
-            return Ok();
+            return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
+        }
+
+        [HttpPut("{id}")]
+        public async Task<IActionResult> Put(string id, User user)
+        {
+            if(id != user.Id) return BadRequest();
+
+            _context.Entry(user).State = EntityState.Modified;
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (DbUpdateConcurrencyException)
+            {
+                return NotFound();
+            }
+
+            return NoContent();
         }
 
         [HttpDelete("{id}")]
-        public IActionResult Delete(string id)
+        public async Task<IActionResult> Delete(string id)
         {
-            var user = _context.User.Where(x => x.Id == id).FirstOrDefault();
-            _context.User.Remove(user);
-            _context.SaveChanges();
+            var user = await _context.User.Where(x => x.Id == id).FirstOrDefaultAsync();
 
-            return Ok();
+            if(user == null) return NotFound();
+
+            _context.User.Remove(user);
+            await _context.SaveChangesAsync();
+
+            return NoContent();
         }
     }
 }
