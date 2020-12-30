@@ -22,8 +22,6 @@ namespace agenda_web_api.Controllers
         public async Task<ActionResult<User>> Get()
         {
             var users = await _context.User.ToListAsync();
-
-            if (users == null) return NotFound();
         
             return Ok(users);
         }
@@ -60,7 +58,9 @@ namespace agenda_web_api.Controllers
             }
             catch (DbUpdateConcurrencyException)
             {
-                return NotFound();
+                if (!UserExists(id)) return NotFound();
+                
+                throw;
             }
 
             return NoContent();
@@ -69,7 +69,7 @@ namespace agenda_web_api.Controllers
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
-            var user = await _context.User.Where(x => x.Id == id).FirstOrDefaultAsync();
+            var user = await _context.User.Where(u => u.Id == id).FirstOrDefaultAsync();
 
             if(user == null) return NotFound();
 
@@ -78,5 +78,8 @@ namespace agenda_web_api.Controllers
 
             return NoContent();
         }
+
+        private bool UserExists(string id) =>
+            _context.User.Any(u => u.Id == id);
     }
 }
