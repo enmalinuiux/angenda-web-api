@@ -28,7 +28,7 @@ namespace agenda_web_api.Models
             if (!optionsBuilder.IsConfigured)
             {
                 // Change connection string
-                optionsBuilder.UseSqlServer(_connectionStringE);
+                optionsBuilder.UseSqlServer(_connectionStringA);
             }
         }
 
