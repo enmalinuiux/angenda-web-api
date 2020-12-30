@@ -9,7 +9,7 @@ namespace agenda_web_api.Controllers
     [ApiController]
     public class UserController : ControllerBase
     {
-        private agendaContext _context;
+        private readonly agendaContext _context;
 
         public UserController(agendaContext context)
         {
