@@ -17,7 +17,7 @@ namespace agenda_web_api.Controllers
             _context = context;
         }
 
-        // method: GET/
+        // Method: GET/
         [HttpGet]
         public async Task<ActionResult<User>> Get()
         {
@@ -26,6 +26,7 @@ namespace agenda_web_api.Controllers
             return Ok(users);
         }
 
+        // Method: GET/:id
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> Get(string id)
         {
@@ -36,6 +37,7 @@ namespace agenda_web_api.Controllers
             return Ok(user);
         }
 
+        // Method: POST/
         [HttpPost]
         public async Task<ActionResult<User>> Post(User user)
         {
@@ -45,6 +47,7 @@ namespace agenda_web_api.Controllers
             return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
         }
 
+        // Method: PUT/:id
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, User user)
         {
@@ -66,6 +69,7 @@ namespace agenda_web_api.Controllers
             return NoContent();
         }
 
+        // Method: DELETE/:id
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
