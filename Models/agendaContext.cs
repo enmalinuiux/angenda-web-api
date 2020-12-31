@@ -6,8 +6,8 @@ namespace agenda_web_api.Models
 {
     public partial class agendaContext : DbContext
     {
-        private const string _connectionStringA = "Data Source=LAPTOP-9IB9T0EQ\\MYSERVER;Database=agenda;Trusted_Connection=True;MultipleActiveResultSets=true";
-        private const string _connectionStringE = "Data Source=desktop-csesl9v\\sqlexpress;Database=agenda;Trusted_Connection=True;MultipleActiveResultSets=true";
+        //private const string _connectionString = "Data Source=LAPTOP-9IB9T0EQ\\MYSERVER;Database=agenda;Trusted_Connection=True;MultipleActiveResultSets=true";
+        private const string _connectionString = "Data Source=desktop-csesl9v\\sqlexpress;Database=agenda;Trusted_Connection=True;MultipleActiveResultSets=true";
         public agendaContext()
         {
         }
@@ -28,7 +28,7 @@ namespace agenda_web_api.Models
             if (!optionsBuilder.IsConfigured)
             {
                 // Change connection string
-                optionsBuilder.UseSqlServer(_connectionStringA);
+                optionsBuilder.UseSqlServer(_connectionString);
             }
         }
 
