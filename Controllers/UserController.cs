@@ -3,6 +3,7 @@ using agenda_web_api.Models;
 using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
+using System;
 
 namespace agenda_web_api.Controllers
 {
@@ -64,6 +65,12 @@ namespace agenda_web_api.Controllers
                 if (!UserExists(id)) return NotFound();
                 
                 throw;
+            }
+            catch(DbUpdateException e)
+            {
+                Console.WriteLine(e.Message);
+
+                //return Ok("ERROR!");
             }
 
             return NoContent();
