@@ -4,6 +4,7 @@ using System.Linq;
 using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System;
+using agenda_web_api.Tools;
 
 namespace agenda_web_api.Controllers
 {
@@ -42,8 +43,21 @@ namespace agenda_web_api.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> Post(User user)
         {
+            user.Id = Encryptor.createUUID();
+            user.Pass = Encryptor.GetSHA256(user.Pass);
+            
             await _context.User.AddAsync(user);
-            await _context.SaveChangesAsync();
+            
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch(DbUpdateException e)
+            {
+                Console.WriteLine(e.Message);
+
+                return BadRequest();
+            }
 
             return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
         }

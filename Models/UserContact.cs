@@ -3,7 +3,7 @@ using System.Collections.Generic;
 
 namespace agenda_web_api.Models
 {
-    public partial class UserContacto
+    public partial class UserContact
     {
         public string ContactId { get; set; }
         public string UserId { get; set; }

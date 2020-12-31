@@ -1,5 +1,7 @@
 ﻿using System;
 using System.Collections.Generic;
+using System.Runtime.Serialization;
+using System.Text.Json.Serialization;
 
 namespace agenda_web_api.Models
 {
@@ -8,8 +10,8 @@ namespace agenda_web_api.Models
         public User()
         {
             InverseBusinessNavigation = new HashSet<User>();
-            UserContactoContact = new HashSet<UserContacto>();
-            UserContactoUser = new HashSet<UserContacto>();
+            UserContactContact = new HashSet<UserContact>();
+            UserContactUser = new HashSet<UserContact>();
             UserPhone = new HashSet<UserPhone>();
             UserSm = new HashSet<UserSm>();
         }
@@ -26,11 +28,23 @@ namespace agenda_web_api.Models
         public string AddressCity { get; set; }
         public string AddressCountry { get; set; }
 
+        [JsonIgnore] 
+        [IgnoreDataMember] 
         public virtual User BusinessNavigation { get; set; }
+        [JsonIgnore] 
+        [IgnoreDataMember] 
         public virtual ICollection<User> InverseBusinessNavigation { get; set; }
-        public virtual ICollection<UserContacto> UserContactoContact { get; set; }
-        public virtual ICollection<UserContacto> UserContactoUser { get; set; }
+        [JsonIgnore] 
+        [IgnoreDataMember]
+        public virtual ICollection<UserContact> UserContactContact { get; set; }
+        [JsonIgnore] 
+        [IgnoreDataMember] 
+        public virtual ICollection<UserContact> UserContactUser { get; set; }
+        [JsonIgnore] 
+        [IgnoreDataMember] 
         public virtual ICollection<UserPhone> UserPhone { get; set; }
+        [JsonIgnore] 
+        [IgnoreDataMember] 
         public virtual ICollection<UserSm> UserSm { get; set; }
     }
 }
