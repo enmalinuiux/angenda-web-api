@@ -1,4 +1,4 @@
 /bin
 /obj
 /.vscode
-appsetting.json
+/appsettings.json
