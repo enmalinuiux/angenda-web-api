@@ -50,6 +50,8 @@ namespace agenda_web_api.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> Post(User user)
         {
+            //Console.WriteLine("El usuario es: ", user.Email);
+
             user.Id = Encryptor.CreateUUID();
             user.Pass = Encryptor.GetSHA256(user.Pass);
 
@@ -74,13 +76,28 @@ namespace agenda_web_api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, User user)
         {
-            if(id != user.Id) return BadRequest();
-
-            _context.Entry(user).State = EntityState.Modified;
+            //if (id != user.Id) return BadRequest(); 
+            var existingUser = await _context.User.Where(u => u.Id == id).FirstOrDefaultAsync();
 
             try
             {
-                await _context.SaveChangesAsync();
+                if (existingUser != null)
+                {
+                    existingUser.Name = user.Name;
+                    existingUser.LastName = user.LastName;
+                    existingUser.Email = user.Email;
+                    existingUser.Pass = user.Pass;
+                    existingUser.Birth = user.Birth;
+                    existingUser.Business = user.Business;
+                    existingUser.UserType = user.UserType;
+                    existingUser.AddressStreet = user.AddressStreet;
+                    existingUser.AddressCity = user.AddressCity;
+                    existingUser.AddressCountry = user.AddressCountry;
+
+                    _context.Entry(existingUser).State = EntityState.Modified;
+
+                    await _context.SaveChangesAsync();
+                }
             }
             catch (DbUpdateConcurrencyException)
             {
