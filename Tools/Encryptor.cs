@@ -1,12 +1,18 @@
 using System;
+using System.IdentityModel.Tokens.Jwt;
+using System.Security.Claims;
 using System.Security.Cryptography;
 using System.Text;
+using agenda_web_api.Helpers;
+using agenda_web_api.Models;
+using Microsoft.Extensions.Options;
+using Microsoft.IdentityModel.Tokens;
 
 namespace agenda_web_api.Tools
 {
     public class Encryptor
     {
-        public static string createUUID(){
+        public static string CreateUUID(){
             Guid guid = Guid.NewGuid();
             return guid.ToString();
         }

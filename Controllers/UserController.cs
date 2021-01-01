@@ -43,9 +43,9 @@ namespace agenda_web_api.Controllers
         [HttpPost]
         public async Task<ActionResult<User>> Post(User user)
         {
-            user.Id = Encryptor.createUUID();
+            user.Id = Encryptor.CreateUUID();
             user.Pass = Encryptor.GetSHA256(user.Pass);
-            
+
             await _context.User.AddAsync(user);
             
             try

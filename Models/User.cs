@@ -20,6 +20,9 @@ namespace agenda_web_api.Models
         public string Name { get; set; }
         public string LastName { get; set; }
         public string Email { get; set; }
+        
+        [JsonIgnore] 
+        [IgnoreDataMember] 
         public string Pass { get; set; }
         public string Business { get; set; }
         public DateTime Birth { get; set; }
