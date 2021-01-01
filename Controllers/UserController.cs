@@ -5,6 +5,9 @@ using Microsoft.EntityFrameworkCore;
 using System.Threading.Tasks;
 using System;
 using agenda_web_api.Tools;
+using agenda_web_api.Services;
+using agenda_web_api.Models.HttpMethods;
+using Microsoft.AspNetCore.Authorization;
 
 namespace agenda_web_api.Controllers
 {
@@ -13,13 +16,16 @@ namespace agenda_web_api.Controllers
     public class UserController : ControllerBase
     {
         private readonly agendaContext _context;
+        private IUserService _userService;
 
-        public UserController(agendaContext context)
+        public UserController(agendaContext context, IUserService userService)
         {
             _context = context;
+            _userService = userService;
         }
 
         // Method: GET/
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<User>> Get()
         {
@@ -29,6 +35,7 @@ namespace agenda_web_api.Controllers
         }
 
         // Method: GET/:id
+        [Authorize]
         [HttpGet("{id}")]
         public async Task<ActionResult<User>> Get(string id)
         {
@@ -63,6 +70,7 @@ namespace agenda_web_api.Controllers
         }
 
         // Method: PUT/:id
+        [Authorize]
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, User user)
         {
@@ -91,6 +99,7 @@ namespace agenda_web_api.Controllers
         }
 
         // Method: DELETE/:id
+        [Authorize]
         [HttpDelete("{id}")]
         public async Task<IActionResult> Delete(string id)
         {
@@ -102,6 +111,18 @@ namespace agenda_web_api.Controllers
             await _context.SaveChangesAsync();
 
             return NoContent();
+        }
+
+        // Method: POST/authenticate/
+        [HttpPost("authenticate")]
+        public IActionResult Authenticate(AuthenticateRequest model)
+        {
+            var response = _userService.Authenticate(model);
+
+            if (response == null)
+                return BadRequest(new { message = "Username or password is incorrect" });
+
+            return Ok(response);
         }
 
         private bool UserExists(string id) =>

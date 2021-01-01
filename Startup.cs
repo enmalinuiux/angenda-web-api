@@ -13,6 +13,8 @@ using Microsoft.Extensions.DependencyInjection;
 using Microsoft.Extensions.Hosting;
 using Microsoft.Extensions.Logging;
 using Microsoft.AspNetCore.Mvc.NewtonsoftJson;
+using agenda_web_api.Helpers;
+using agenda_web_api.Services;
 
 namespace agenda_web_api
 {
@@ -33,13 +35,14 @@ namespace agenda_web_api
             services.AddControllers()
                 .AddNewtonsoftJson();
 
-            services.AddDbContext<agendaContext>();
+            services.AddDbContext<agendaContext>(options =>
+            options.UseSqlServer(Configuration.GetConnectionString("SqlServerConnectionString")));
 
             // configure strongly typed settings object
-            //services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
+            services.Configure<AppSettings>(Configuration.GetSection("AppSettings"));
 
             // configure DI for application services
-            //services.AddScoped<IUserService, UserService>();
+            services.AddScoped<IUserService, UserService>();
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -61,7 +64,7 @@ namespace agenda_web_api
                 .AllowAnyHeader());
 
             // custom jwt auth middleware
-            //app.UseMiddleware<JwtMiddleware>();
+            app.UseMiddleware<JwtMiddleware>();
 
             app.UseAuthorization();
 
