@@ -25,7 +25,6 @@ namespace agenda_web_api.Controllers
         }
 
         // Method: GET/
-        [Authorize]
         [HttpGet]
         public async Task<ActionResult<User>> Get()
         {
@@ -61,13 +60,13 @@ namespace agenda_web_api.Controllers
             {
                 await _context.SaveChangesAsync();
             }
-            catch(DbUpdateException e)
+            catch (DbUpdateException e)
             {
                 Console.WriteLine(e.Message);
 
                 return BadRequest();
             }
-
+            
             return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
         }
 
