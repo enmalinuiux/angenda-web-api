@@ -25,10 +25,20 @@ namespace agenda_web_api.Controllers
         }
 
         // Method: GET/
+        [Authorize]
         [HttpGet]
         public async Task<ActionResult<User>> Get()
         {
             var users = await _context.User.ToListAsync();
+        
+            return Ok(users);
+        }
+
+        // Method: GET/business-users
+        [HttpGet("business-users")]
+        public async Task<ActionResult<User>> GetBusinessUsers()
+        {
+            var users = await _context.User.Where(u => u.UserType == 1).ToListAsync();
         
             return Ok(users);
         }
