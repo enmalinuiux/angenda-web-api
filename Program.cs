@@ -21,7 +21,7 @@ namespace agenda_web_api
                 .ConfigureWebHostDefaults(webBuilder =>
                 {
                     webBuilder.UseStartup<Startup>()
-                    .UseUrls("https://localhost:4000");
+                    .UseUrls("https://localhost:4000/");
                 });
     }
 }

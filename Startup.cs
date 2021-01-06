@@ -43,6 +43,8 @@ namespace agenda_web_api
 
             // configure DI for application services
             services.AddScoped<IUserService, UserService>();
+
+            // services.AddMvc().AddJsonOptions(x => x.SerializerSettings.ReferenceLoopHandling = Newtonsoft.Json.ReferenceLoopHandling.Ignore);
         }
 
         // This method gets called by the runtime. Use this method to configure the HTTP request pipeline.
@@ -58,10 +60,12 @@ namespace agenda_web_api
             app.UseRouting();
 
             // global cors policy
-            app.UseCors(x => x
+            app.UseCors(
+                options => options
                 .AllowAnyOrigin()
                 .AllowAnyMethod()
-                .AllowAnyHeader());
+                .AllowAnyHeader()
+            );
 
             // custom jwt auth middleware
             app.UseMiddleware<JwtMiddleware>();

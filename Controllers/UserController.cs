@@ -7,7 +7,9 @@ using System;
 using agenda_web_api.Tools;
 using agenda_web_api.Services;
 using agenda_web_api.Models.HttpMethods;
-using Microsoft.AspNetCore.Authorization;
+using agenda_web_api.DTO;
+using System.Collections;
+using System.Collections.Generic;
 
 namespace agenda_web_api.Controllers
 {
@@ -30,7 +32,7 @@ namespace agenda_web_api.Controllers
         public async Task<ActionResult<User>> Get()
         {
             var users = await _context.User.ToListAsync();
-        
+
             return Ok(users);
         }
 
@@ -39,7 +41,7 @@ namespace agenda_web_api.Controllers
         public async Task<ActionResult<User>> GetBusinessUsers()
         {
             var users = await _context.User.Where(u => u.UserType == 1).ToListAsync();
-        
+
             return Ok(users);
         }
 
@@ -51,21 +53,42 @@ namespace agenda_web_api.Controllers
             var user = await _context.User.FindAsync(id);
 
             if (user == null) return NotFound();
-            
+
             return Ok(user);
+        }
+
+        // Method: GET/:id/contacts/
+        [HttpGet("{id}/contacts")]
+        public async Task<ActionResult<UserDTO>> GetContacts(string id)
+        {
+            var Usercontacts = await _context.UserContact.Include(c => c.Contact).Include(p =>p.User.UserPhone).Where(u => u.UserId == id).ToListAsync();            
+
+            var contactList = Usercontacts.Select(contacts => new UserDTO
+            {
+                Id = contacts.ContactId,
+                Name = contacts.Contact.Name,
+                LastName = contacts.Contact.LastName,
+                Email = contacts.Contact.Email,
+                Birth = contacts.Contact.Birth,
+                UserType = contacts.Contact.UserType,
+                AddressStreet = contacts.Contact.AddressStreet,
+                AddressCity = contacts.Contact.AddressCity,
+                AddressCountry = contacts.Contact.AddressCountry,
+                Phones = contacts.Contact.UserPhone.Select(x => x.Phone).ToList()
+            });
+
+            return Ok(contactList);
         }
 
         // Method: POST/
         [HttpPost]
         public async Task<ActionResult<User>> Post(User user)
         {
-            //Console.WriteLine("El usuario es: ", user.Email);
-
             user.Id = Encryptor.CreateUUID();
             user.Pass = Encryptor.GetSHA256(user.Pass);
 
             await _context.User.AddAsync(user);
-            
+
             try
             {
                 await _context.SaveChangesAsync();
@@ -76,7 +99,7 @@ namespace agenda_web_api.Controllers
 
                 return BadRequest();
             }
-            
+
             return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
         }
 
@@ -85,40 +108,26 @@ namespace agenda_web_api.Controllers
         [HttpPut("{id}")]
         public async Task<IActionResult> Put(string id, User user)
         {
-            //if (id != user.Id) return BadRequest(); 
+            if (id != user.Id) return BadRequest();
+
             var existingUser = await _context.User.Where(u => u.Id == id).FirstOrDefaultAsync();
 
             try
             {
                 if (existingUser != null)
                 {
-                    existingUser.Name = user.Name;
-                    existingUser.LastName = user.LastName;
-                    existingUser.Email = user.Email;
-                    existingUser.Pass = user.Pass;
-                    existingUser.Birth = user.Birth;
-                    existingUser.Business = user.Business;
-                    existingUser.UserType = user.UserType;
-                    existingUser.AddressStreet = user.AddressStreet;
-                    existingUser.AddressCity = user.AddressCity;
-                    existingUser.AddressCountry = user.AddressCountry;
-
-                    _context.Entry(existingUser).State = EntityState.Modified;
+                    _context.Entry(user).State = EntityState.Modified;
 
                     await _context.SaveChangesAsync();
                 }
+                else
+                {
+                    return NotFound();
+                }
             }
-            catch (DbUpdateConcurrencyException)
+            catch (Exception ex)
             {
-                if (!UserExists(id)) return NotFound();
-                
-                throw;
-            }
-            catch(DbUpdateException e)
-            {
-                Console.WriteLine(e.Message);
-
-                //return Ok("ERROR!");
+                Console.WriteLine(ex);
             }
 
             return NoContent();
@@ -131,10 +140,18 @@ namespace agenda_web_api.Controllers
         {
             var user = await _context.User.Where(u => u.Id == id).FirstOrDefaultAsync();
 
-            if(user == null) return NotFound();
+            if (user == null) return NotFound();
 
             _context.User.Remove(user);
-            await _context.SaveChangesAsync();
+
+            try
+            {
+                await _context.SaveChangesAsync();
+            }
+            catch (Exception)
+            {
+                return BadRequest(new { message = "cant delete this row" });
+            }
 
             return NoContent();
         }
@@ -151,7 +168,7 @@ namespace agenda_web_api.Controllers
             return Ok(response);
         }
 
-        private bool UserExists(string id) =>
-            _context.User.Any(u => u.Id == id);
+        // private bool UserExists(string id) =>
+        //     _context.User.Any(u => u.Id == id);
     }
 }
