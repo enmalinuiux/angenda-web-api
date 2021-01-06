@@ -29,9 +29,21 @@ namespace agenda_web_api.Controllers
         // Method: GET/
         [Authorize]
         [HttpGet]
-        public async Task<ActionResult<User>> Get()
+        public async Task<ActionResult<UserDTO>> Get()
         {
-            var users = await _context.User.ToListAsync();
+            var us = await _context.User.ToListAsync();
+
+            var users = us.Select(u => new UserDTO{
+                Id = u.Id,
+                Name = u.Name,
+                LastName = u.LastName,
+                Email = u.Email,
+                Birth = u.Birth,
+                UserType = u.UserType,
+                AddressStreet = u.AddressStreet,
+                AddressCity = u.AddressCity,
+                AddressCountry = u.AddressCountry,
+            });
 
             return Ok(users);
         }
@@ -59,11 +71,11 @@ namespace agenda_web_api.Controllers
 
         // Method: GET/:id/contacts/
         [HttpGet("{id}/contacts")]
-        public async Task<ActionResult<UserDTO>> GetContacts(string id)
+        public async Task<ActionResult<ContactDTO>> GetContacts(string id)
         {
             var Usercontacts = await _context.UserContact.Include(c => c.Contact).Include(p =>p.User.UserPhone).Where(u => u.UserId == id).ToListAsync();            
 
-            var contactList = Usercontacts.Select(contacts => new UserDTO
+            var contactList = Usercontacts.Select(contacts => new ContactDTO
             {
                 Id = contacts.ContactId,
                 Name = contacts.Contact.Name,
@@ -139,10 +151,28 @@ namespace agenda_web_api.Controllers
         public async Task<IActionResult> Delete(string id)
         {
             var user = await _context.User.Where(u => u.Id == id).FirstOrDefaultAsync();
+            var uContacts = await _context.UserContact.Where(u => u.UserId == id || u.ContactId == id).ToListAsync();
+            var uPhones = await _context.UserPhone.Where(u => u.UserId == id).ToListAsync();
+            var uSms = await _context.UserSm.Where(u => u.UserId == id).ToListAsync();
 
             if (user == null) return NotFound();
 
-            _context.User.Remove(user);
+            foreach (var sm in uSms)
+            {
+                _context.UserSm.Remove(sm);
+            }        
+
+            foreach (var phone in uPhones)
+            {
+                _context.UserPhone.Remove(phone);
+            }
+
+            foreach (var contact in uContacts)
+            {
+                _context.UserContact.Remove(contact);
+            }
+
+             _context.User.Remove(user);
 
             try
             {

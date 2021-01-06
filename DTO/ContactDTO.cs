@@ -5,7 +5,7 @@ using System.Collections.Generic;
 
 namespace agenda_web_api.DTO
 {
-    public class UserDTO
+    public class ContactDTO
     {
         public string Id { get; set; }
         public string Name { get; set; }
@@ -17,5 +17,7 @@ namespace agenda_web_api.DTO
         public string AddressStreet { get; set; }
         public string AddressCity { get; set; }
         public string AddressCountry { get; set; }
+        public List<string> Phones { get; set; }    
+
     }
 }
