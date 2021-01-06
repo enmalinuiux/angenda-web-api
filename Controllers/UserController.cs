@@ -8,8 +8,6 @@ using agenda_web_api.Tools;
 using agenda_web_api.Services;
 using agenda_web_api.Models.HttpMethods;
 using agenda_web_api.DTO;
-using System.Collections;
-using System.Collections.Generic;
 
 namespace agenda_web_api.Controllers
 {

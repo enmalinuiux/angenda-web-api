@@ -43,7 +43,7 @@ namespace agenda_web_api.Services
             // authentication successful so generate jwt token
             var token = generateJwtToken(user);
 
-            return new AuthenticateResponse(user.Email, token);
+            return new AuthenticateResponse(token);
         }
 
         public IEnumerable<User> GetAll()
