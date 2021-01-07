@@ -49,9 +49,14 @@ namespace agenda_web_api.Controllers
 
         // Method: GET/business-users
         [HttpGet("business-users")]
-        public async Task<ActionResult<User>> GetBusinessUsers()
+        public async Task<ActionResult<BUserDTO>> GetBUsers()
         {
-            var users = await _context.User.Where(u => u.UserType == 1).ToListAsync();
+            var us = await _context.User.Where(u => u.UserType == 1).ToListAsync();
+
+            var users = us.Select(u => new BUserDTO{
+                Id = u.Id,
+                Name = u.Name
+            });
 
             return Ok(users);
         }
@@ -106,7 +111,7 @@ namespace agenda_web_api.Controllers
 
         // Method: POST/
         [HttpPost]
-        public async Task<ActionResult<User>> Post(User user)
+        public async Task<ActionResult<UserDTO>> Post(User user)
         {
             user.Id = Encryptor.CreateUUID();
             user.Pass = Encryptor.GetSHA256(user.Pass);
@@ -119,9 +124,7 @@ namespace agenda_web_api.Controllers
             }
             catch (DbUpdateException e)
             {
-                Console.WriteLine(e.Message);
-
-                return BadRequest();
+                return BadRequest(e.InnerException);
             }
 
             return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
@@ -151,7 +154,7 @@ namespace agenda_web_api.Controllers
             }
             catch (Exception ex)
             {
-                Console.WriteLine(ex);
+                BadRequest(ex.InnerException);
             }
 
             return NoContent();
@@ -192,7 +195,7 @@ namespace agenda_web_api.Controllers
             }
             catch (Exception)
             {
-                return BadRequest(new { message = "cant delete this row" });
+                return BadRequest(new { message = "You can't delete this user. This user is relarioned with another table." });
             }
 
             return NoContent();
