@@ -37,6 +37,7 @@ namespace agenda_web_api.Controllers
                 LastName = u.LastName,
                 Email = u.Email,
                 Birth = u.Birth,
+                Business = u.Business,
                 UserType = u.UserType,
                 AddressStreet = u.AddressStreet,
                 AddressCity = u.AddressCity,
@@ -58,13 +59,26 @@ namespace agenda_web_api.Controllers
         // Method: GET/:id
         [Authorize]
         [HttpGet("{id}")]
-        public async Task<ActionResult<User>> Get(string id)
+        public async Task<ActionResult<UserDTO>> Get(string id)
         {
             var user = await _context.User.FindAsync(id);
 
             if (user == null) return NotFound();
 
-            return Ok(user);
+            var userDTO = new UserDTO{
+                Id = user.Id,
+                Name = user.Name,
+                LastName = user.LastName,
+                Email = user.Email,
+                Birth = user.Birth,
+                Business = user.Business,
+                UserType = user.UserType,
+                AddressStreet = user.AddressStreet,
+                AddressCity = user.AddressCity,
+                AddressCountry = user.AddressCountry,
+            };
+
+            return Ok(userDTO);
         }
 
         // Method: GET/:id/contacts/
