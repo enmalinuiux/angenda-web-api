@@ -86,8 +86,9 @@ namespace agenda_web_api.Controllers
             return Ok(userDTO);
         }
 
-        // Method: GET/:id/contacts/
-        [HttpGet("{id}/contacts")]
+        // Method: GET/:id/contact/
+        [Authorize]
+        [HttpGet("{id}/contact")]
         public async Task<ActionResult<ContactDTO>> GetContacts(string id)
         {
             var Usercontacts = await _context.UserContact.Include(c => c.Contact).Include(p =>p.User.UserPhone).Where(u => u.UserId == id).ToListAsync();            
@@ -107,6 +108,31 @@ namespace agenda_web_api.Controllers
             });
 
             return Ok(contactList);
+        }
+
+        // Method: GET/:id/contact/:contactId
+        [Authorize]
+        [HttpGet("{id}/contact/{contactId}")]
+        public async Task<ActionResult<ContactDTO>> GetContact(string contactId, string id)
+        {
+            var contact = await _context.UserContact.Include(c => c.Contact).Include(p =>p.User.UserPhone).Where(u => u.UserId == id && u.ContactId == contactId).FirstOrDefaultAsync();  
+
+            if (contact == null) return NotFound();
+
+            var contactDTO = new ContactDTO{
+                Id = contact.ContactId,
+                Name = contact.Contact.Name,
+                LastName = contact.Contact.LastName,
+                Email = contact.Contact.Email,
+                Birth = contact.Contact.Birth,
+                UserType = contact.Contact.UserType,
+                AddressStreet = contact.Contact.AddressStreet,
+                AddressCity = contact.Contact.AddressCity,
+                AddressCountry = contact.Contact.AddressCountry,
+                Phones = contact.Contact.UserPhone.Select(x => x.Phone).ToList()
+            };
+
+            return Ok(contactDTO);
         }
 
         // Method: POST/
@@ -195,7 +221,7 @@ namespace agenda_web_api.Controllers
             }
             catch (Exception)
             {
-                return BadRequest(new { message = "You can't delete this user. This user is relarioned with another table." });
+                return BadRequest(new { message = "You can't delete this user. This user is relationed with another table!" });
             }
 
             return NoContent();
