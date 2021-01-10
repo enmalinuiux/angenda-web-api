@@ -32,18 +32,23 @@ namespace agenda_web_api.Controllers
                 .Include(p =>p.User.UserPhone)
                 .Where(u => u.UserId == userId).ToListAsync();            
 
-            var contactList = Usercontacts.Select(contacts => new ContactDTO
+            var contactList = Usercontacts.Select(contact => new ContactDTO
             {
-                Id = contacts.ContactId,
-                Name = contacts.Contact.Name,
-                LastName = contacts.Contact.LastName,
-                Email = contacts.Contact.Email,
-                Birth = contacts.Contact.Birth,
-                UserType = contacts.Contact.UserType,
-                AddressStreet = contacts.Contact.AddressStreet,
-                AddressCity = contacts.Contact.AddressCity,
-                AddressCountry = contacts.Contact.AddressCountry,
-                Phones = contacts.Contact.UserPhone.Select(x => x.Phone).ToList()
+                            Id = contact.ContactId,
+                          Name = contact.Contact.Name,
+                      LastName = contact.Contact.LastName,
+                      Nickname = contact.Nickname,
+                         Email = contact.Contact.Email,
+                         Birth = contact.Contact.Birth,
+                      UserType = contact.Contact.UserType,
+                 AddressStreet = contact.Contact.AddressStreet,
+                   AddressCity = contact.Contact.AddressCity,
+                AddressCountry = contact.Contact.AddressCountry,
+                 ScheduledDate = contact.ScheduledDate,
+                     IsBlocked = contact.IsBlocked,
+                        Phones = contact.Contact.UserPhone
+                                    .Select(x => x.Phone)
+                                    .ToList()
             });
 
             return Ok(contactList);
@@ -62,19 +67,23 @@ namespace agenda_web_api.Controllers
 
             if (contact == null) return NotFound();
 
-            var contactDTO = new ContactDTO{
-                Id = contact.ContactId,
-                Name = contact.Contact.Name,
-                LastName = contact.Contact.LastName,
-                Email = contact.Contact.Email,
-                Birth = contact.Contact.Birth,
-                UserType = contact.Contact.UserType,
-                AddressStreet = contact.Contact.AddressStreet,
-                AddressCity = contact.Contact.AddressCity,
+            var contactDTO = new ContactDTO
+            {
+                            Id = contact.ContactId,
+                          Name = contact.Contact.Name,
+                      LastName = contact.Contact.LastName,
+                      Nickname = contact.Nickname,
+                         Email = contact.Contact.Email,
+                         Birth = contact.Contact.Birth,
+                      UserType = contact.Contact.UserType,
+                 AddressStreet = contact.Contact.AddressStreet,
+                   AddressCity = contact.Contact.AddressCity,
                 AddressCountry = contact.Contact.AddressCountry,
-                Phones = contact.Contact.UserPhone
-                    .Select(x => x.Phone)
-                    .ToList()
+                 ScheduledDate = contact.ScheduledDate,
+                     IsBlocked = contact.IsBlocked,
+                        Phones = contact.Contact.UserPhone
+                                    .Select(x => x.Phone)
+                                    .ToList()
             };
 
             return Ok(contactDTO);
