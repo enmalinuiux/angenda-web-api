@@ -25,9 +25,12 @@ namespace agenda_web_api.Controllers
         // Method: GET/:id/contact/
         [Authorize]
         [HttpGet("{userId}")]
-        public async Task<ActionResult<ContactDTO>> GetContacts(string id)
+        public async Task<ActionResult<ContactDTO>> GetContacts(string userId)
         {
-            var Usercontacts = await _context.UserContact.Include(c => c.Contact).Include(p =>p.User.UserPhone).Where(u => u.UserId == id).ToListAsync();            
+            var Usercontacts = await _context.UserContact
+                .Include(c => c.Contact)
+                .Include(p =>p.User.UserPhone)
+                .Where(u => u.UserId == userId).ToListAsync();            
 
             var contactList = Usercontacts.Select(contacts => new ContactDTO
             {
@@ -92,7 +95,7 @@ namespace agenda_web_api.Controllers
                 return BadRequest(e.InnerException);
             }
 
-            return CreatedAtAction(nameof(GetContacts), new { contactId = contact.ContactId, id = contact.UserId }, contact);
+            return Ok(contact);
         }
 
         // Method: PUT/:userId/:contactId
