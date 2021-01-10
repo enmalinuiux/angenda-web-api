@@ -16,12 +16,10 @@ namespace agenda_web_api.Controllers
     public class UserController : ControllerBase
     {
         private readonly agendaContext _context;
-        private IUserService _userService;
 
-        public UserController(agendaContext context, IUserService userService)
+        public UserController(agendaContext context)
         {
             _context = context;
-            _userService = userService;
         }
 
         // Method: GET/
@@ -84,76 +82,6 @@ namespace agenda_web_api.Controllers
             };
 
             return Ok(userDTO);
-        }
-
-        // Method: GET/:id/contact/
-        [Authorize]
-        [HttpGet("{id}/contact")]
-        public async Task<ActionResult<ContactDTO>> GetContacts(string id)
-        {
-            var Usercontacts = await _context.UserContact.Include(c => c.Contact).Include(p =>p.User.UserPhone).Where(u => u.UserId == id).ToListAsync();            
-
-            var contactList = Usercontacts.Select(contacts => new ContactDTO
-            {
-                Id = contacts.ContactId,
-                Name = contacts.Contact.Name,
-                LastName = contacts.Contact.LastName,
-                Email = contacts.Contact.Email,
-                Birth = contacts.Contact.Birth,
-                UserType = contacts.Contact.UserType,
-                AddressStreet = contacts.Contact.AddressStreet,
-                AddressCity = contacts.Contact.AddressCity,
-                AddressCountry = contacts.Contact.AddressCountry,
-                Phones = contacts.Contact.UserPhone.Select(x => x.Phone).ToList()
-            });
-
-            return Ok(contactList);
-        }
-
-        // Method: GET/:id/contact/:contactId
-        [Authorize]
-        [HttpGet("{id}/contact/{contactId}")]
-        public async Task<ActionResult<ContactDTO>> GetContact(string contactId, string id)
-        {
-            var contact = await _context.UserContact.Include(c => c.Contact).Include(p =>p.User.UserPhone).Where(u => u.UserId == id && u.ContactId == contactId).FirstOrDefaultAsync();  
-
-            if (contact == null) return NotFound();
-
-            var contactDTO = new ContactDTO{
-                Id = contact.ContactId,
-                Name = contact.Contact.Name,
-                LastName = contact.Contact.LastName,
-                Email = contact.Contact.Email,
-                Birth = contact.Contact.Birth,
-                UserType = contact.Contact.UserType,
-                AddressStreet = contact.Contact.AddressStreet,
-                AddressCity = contact.Contact.AddressCity,
-                AddressCountry = contact.Contact.AddressCountry,
-                Phones = contact.Contact.UserPhone.Select(x => x.Phone).ToList()
-            };
-
-            return Ok(contactDTO);
-        }
-
-        // Method: POST/
-        [HttpPost]
-        public async Task<ActionResult<UserDTO>> Post(User user)
-        {
-            user.Id = Encryptor.CreateUUID();
-            user.Pass = Encryptor.GetSHA256(user.Pass);
-
-            await _context.User.AddAsync(user);
-
-            try
-            {
-                await _context.SaveChangesAsync();
-            }
-            catch (DbUpdateException e)
-            {
-                return BadRequest(e.InnerException);
-            }
-
-            return CreatedAtAction(nameof(Get), new { id = user.Id }, user);
         }
 
         // Method: PUT/:id
@@ -226,20 +154,5 @@ namespace agenda_web_api.Controllers
 
             return NoContent();
         }
-
-        // Method: POST/authenticate/
-        [HttpPost("authenticate")]
-        public IActionResult Authenticate(AuthenticateRequest model)
-        {
-            var response = _userService.Authenticate(model);
-
-            if (response == null)
-                return BadRequest(new { message = "Username or password is incorrect" });
-
-            return Ok(response);
-        }
-
-        // private bool UserExists(string id) =>
-        //     _context.User.Any(u => u.Id == id);
     }
 }
