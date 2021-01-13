@@ -7,7 +7,7 @@ using System.Linq;
 using System.Security.Claims;
 using System.Text;
 using agenda_web_api.Models;
-using agenda_web_api.Models.HttpMethods;
+using agenda_web_api.Models.DTO;
 using System.Threading.Tasks;
 using agenda_web_api.Helpers;
 using agenda_web_api.Tools;
@@ -16,7 +16,7 @@ namespace agenda_web_api.Services
 {
     public interface IUserService
     {
-        AuthenticateResponse Authenticate(AuthenticateRequest model);
+        AuthenticateResponseDTO Authenticate(AuthenticateRequestDTO model);
         IEnumerable<User> GetAll();
         User GetById(string id);
     }
@@ -32,7 +32,7 @@ namespace agenda_web_api.Services
             _appSettings = appSettings.Value;
         }
 
-        public AuthenticateResponse Authenticate(AuthenticateRequest model)
+        public AuthenticateResponseDTO Authenticate(AuthenticateRequestDTO model)
         {
             var encryptedPass = Encryptor.GetSHA256(model.Pass);
             var user = _context.User.SingleOrDefault(x => x.Email == model.Email && x.Pass == encryptedPass);
@@ -43,7 +43,7 @@ namespace agenda_web_api.Services
             // authentication successful so generate jwt token
             var token = generateJwtToken(user);
 
-            return new AuthenticateResponse(token);
+            return new AuthenticateResponseDTO(token);
         }
 
         public IEnumerable<User> GetAll()

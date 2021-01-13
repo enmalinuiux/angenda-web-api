@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using System;
 using agenda_web_api.Tools;
 using agenda_web_api.Services;
-using agenda_web_api.Models.HttpMethods;
-using agenda_web_api.DTO;
+using agenda_web_api.Models.DTO;
 
 namespace agenda_web_api.Controllers
 {

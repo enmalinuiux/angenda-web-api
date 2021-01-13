@@ -1,9 +1,7 @@
-
-
 using System;
 using System.Collections.Generic;
 
-namespace agenda_web_api.DTO
+namespace agenda_web_api.Models.DTO
 {
     public class BUserDTO
     {

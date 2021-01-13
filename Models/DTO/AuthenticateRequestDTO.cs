@@ -1,8 +1,8 @@
 using System.ComponentModel.DataAnnotations;
 
-namespace agenda_web_api.Models.HttpMethods
+namespace agenda_web_api.Models.DTO
 {
-    public class AuthenticateRequest
+    public class AuthenticateRequestDTO
     {
         [Required]
         public string Email { get; set; }

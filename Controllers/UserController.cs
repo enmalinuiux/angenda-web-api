@@ -6,8 +6,7 @@ using System.Threading.Tasks;
 using System;
 using agenda_web_api.Tools;
 using agenda_web_api.Services;
-using agenda_web_api.Models.HttpMethods;
-using agenda_web_api.DTO;
+using agenda_web_api.Models.DTO;
 
 namespace agenda_web_api.Controllers
 {
@@ -121,6 +120,7 @@ namespace agenda_web_api.Controllers
         {
             var user = await _context.User.Where(u => u.Id == id).FirstOrDefaultAsync();
             var uContacts = await _context.UserContact.Where(u => u.UserId == id || u.ContactId == id).ToListAsync();
+            var notifications = await _context.Notification.Where(u => u.UserId == id || u.ContactId == id).ToListAsync();
             var uPhones = await _context.UserPhone.Where(u => u.UserId == id).ToListAsync();
             var uSms = await _context.UserSm.Where(u => u.UserId == id).ToListAsync();
 
@@ -134,6 +134,11 @@ namespace agenda_web_api.Controllers
             foreach (var phone in uPhones)
             {
                 _context.UserPhone.Remove(phone);
+            }
+
+            foreach (var notification in notifications)
+            {
+                _context.Notification.Remove(notification);
             }
 
             foreach (var contact in uContacts)
